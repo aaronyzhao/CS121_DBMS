@@ -30,3 +30,9 @@ SELECT s.name, so.status, SUM(so.qty * so.price_per_unit) AS total_cost
     FROM supplier s
     JOIN supply_order so ON s.supplier_id = so.supplier_id
     GROUP BY s.name, so.status;
+
+-- e. Delete a supply order (example here being supply_order_id = 1)
+-- !! RELATIONAL ALGEBRA #3 !!
+DELETE FROM supply_order
+    WHERE supply_order_id = 1; 
+
