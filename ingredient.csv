@@ -1,0 +1,26 @@
+ingredient_id,name,qty_in_stock,unit,supplier_id
+1,Arugula,45,kg,3
+2,Spinach,20,kg,2
+3,Romaine Lettuce,11,kg,2
+4,Pre-mixed Greens,0,kg,3
+5,Avocado,72,kg,3
+6,Tomato,89,kg,4
+7,Olive,36,kg,4
+8,Cucumber,90,kg,4
+9,Saffron Basmati Rice,85,kg,3
+10,Brown Rice,22,kg,3
+11,Balsamic Date Vinaigrette,99,kg,2
+12,Tzatziki,89,kg,2
+13,Hummus,93,kg,2
+14,Harissa,73,kg,1
+15,Lemon Herb Tahini,88,kg,1
+16,Harissa Honey Chicken,6,kg,2
+17,Grilled Chicken,28,kg,2
+18,Braised Lamb,91,kg,2
+19,Crispy Falafel,87,kg,3
+20,Pita Roll,89,kg,3
+21,Water,57,orders,1
+22,Soda,21,orders,4
+23,Tea,20,orders,1
+24,Brownie,95,orders,3
+25,Cookie,3,orders,2
