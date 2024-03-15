@@ -10,6 +10,6 @@ CREATE USER 'restsupplyadmin'@'localhost' IDENTIFIED BY 'password';
 CREATE USER 'restsupplyclient'@'localhost' IDENTIFIED BY 'password';
 
 -- Can add more users or refine permissions
-GRANT ALL PRIVILEGES ON shelterdb.* TO 'restsupplyadmin'@'localhost';
-GRANT SELECT ON shelterdb.* TO 'restsupplyclient'@'localhost';
+GRANT ALL PRIVILEGES ON final.* TO 'restsupplyadmin'@'localhost';
+GRANT SELECT ON final.* TO 'restsupplyclient'@'localhost';
 FLUSH PRIVILEGES;

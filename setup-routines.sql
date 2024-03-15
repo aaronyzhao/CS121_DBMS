@@ -1,11 +1,13 @@
 drop FUNCTION IF EXISTS calculate_total_order_cost;
+drop FUNCTION IF EXISTS check_ingredient_inventory;
 drop FUNCTION IF EXISTS get_supplier_contact_for_ingredient;
 
 drop PROCEDURE IF EXISTS insert_new_customer_order;
 drop PROCEDURE IF EXISTS update_ingredient_inventory;
 drop PROCEDURE IF EXISTS process_supply_order;
+drop PROCEDURE IF EXISTS insert_new_supply_order;
 
-drop TRIGGER IF EXISTS before_supply_order_update;
+drop TRIGGER IF EXISTS after_cust_order_insert;
 
 -- UDF FUNCTIONS
 -- 1. Calculate Total Order Cost
@@ -71,7 +73,7 @@ CREATE PROCEDURE update_ingredient_inventory
     (IN ingredient_id_param BIGINT UNSIGNED, IN qty_in_stock_param NUMERIC(4,2))
 BEGIN
     UPDATE ingredient
-    SET qty_in_stock = qty_in_stock_param
+    SET qty_in_stock = qty_in_stock + qty_in_stock_param
     WHERE ingredient_id = ingredient_id_param;
 END!
 
@@ -90,6 +92,20 @@ BEGIN
     SET status = status_param
     WHERE supply_order_id = supply_order_id_param;
 END!
+
+DELIMITER ;
+
+-- 4. Insert New Supply Order
+-- This procedure inserts a new supply order into the supply_order table.
+DELIMITER !
+
+CREATE PROCEDURE insert_new_supply_order
+    (IN ingredient_id_param BIGINT UNSIGNED, IN qty_param INT, 
+    IN supplier_id_param BIGINT UNSIGNED, IN ppu_param INT)
+BEGIN
+    INSERT INTO supply_order(supplier_id, status, ingredient_id, qty, price_per_unit) VALUES 
+    (supplier_id_param, 'pending', ingredient_id_param, qty_param, ppu_param);
+END !
 
 DELIMITER ;
 
