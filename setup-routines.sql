@@ -1,5 +1,4 @@
 drop FUNCTION IF EXISTS calculate_total_order_cost;
-drop FUNCTION IF EXISTS check_ingredient_inventory;
 drop FUNCTION IF EXISTS get_supplier_contact_for_ingredient;
 
 drop PROCEDURE IF EXISTS insert_new_customer_order;
