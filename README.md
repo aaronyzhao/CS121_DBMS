@@ -10,4 +10,7 @@ The first is an "easy start" by typing "SOURCE start.sql;" into the sql command 
 1. Before beginning with the CLI, we need to enter MySQL and run `SOURCE comprehensive_test.sql;`, which sets up the database, loads all data, and sets up passwords, permissions, queries, and routines. 
 2. To begin, you will need to install the one singular package dependency: `pip3 install mysql`
 3. Now you can fully interact with the CLI. For admin CLI, `python3 app-admin.py`. For client CLI, `python3 app-client.py`.
+    3a. admin user: azhao, admin pw: adminpw
+    3b. client user: client, client pw: clientpw
+    ** If new logins are created and/or passwords are changed and you forget, rerunning `SOURCE comprehensive_test.sql;` will clear it all out. **
 4. Regardless of admin CLI or client CLI, the instructions will only prompt you for single letters or numbers to navigate and interact with the CLI and complete tasks. 

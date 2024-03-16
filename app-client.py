@@ -219,11 +219,47 @@ def quit_ui():
     exit()
 
 
+import mysql.connector
+from mysql.connector import Error
+
+def login_and_authenticate_client():
+    """
+    Prompts the user for a username and password, and authenticates the credentials.
+    If authentication fails due to incorrect credentials, an appropriate message is displayed.
+    """
+    username = input('Username: ')
+    password = input('Password: ')
+
+    cursor = conn.cursor()
+
+    # The SQL only checks for the existence of the user based on username and password.
+    sql = 'SELECT authenticate(%s, %s) AS login FROM user_info WHERE username=%s;'
+    params = (username, password, username)
+
+    try:
+        cursor.execute(sql, params)
+        row = cursor.fetchone()
+
+        if row is None or not row[0]:
+            print("Login failed: Username or password incorrect.")
+            return False
+
+        print(f"Login successful: Welcome, {username}!")
+        return True
+
+    except Error as err:
+        print(f"System error: {err}. Please contact the system administrator.")
+        return False
+
+
+
 def main():
     """
     Main function for starting things up.
     """
-    show_options()
+    if (login_and_authenticate_client()):
+        while(True):
+            show_options()
 
 
 if __name__ == '__main__':

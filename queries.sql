@@ -36,3 +36,8 @@ SELECT s.name, so.status, SUM(so.qty * so.price_per_unit) AS total_cost
 DELETE FROM supply_order
     WHERE supply_order_id = 1; 
 
+-- f. Find all menu items below $10
+SELECT name, description, price_usd
+    FROM menu_item
+    WHERE price_usd < 10.00
+    ORDER BY price_usd ASC;

@@ -43,7 +43,10 @@ CREATE TABLE user_info (
     -- represented as 2 characters.  Thus, 256 / 8 * 2 = 64.
     -- We can use BINARY or CHAR here; BINARY simply has a different
     -- definition for comparison/sorting than CHAR.
-    password_hash BINARY(64) NOT NULL
+    password_hash BINARY(64) NOT NULL,
+
+    -- admin flag is added here
+    is_admin TINYINT DEFAULT 0 NOT NULL
 );
 
 -- [Problem 1a]
@@ -51,7 +54,8 @@ CREATE TABLE user_info (
 -- of 20 characters). Salts the password with a newly-generated salt value,
 -- and then the salt and hash values are both stored in the table.
 DELIMITER !
-CREATE PROCEDURE sp_add_user(new_username VARCHAR(20), password VARCHAR(20))
+CREATE PROCEDURE sp_add_user(new_username VARCHAR(20), password VARCHAR(20),
+                            is_admin TINYINT)
 BEGIN
     DECLARE salt_new_one VARCHAR(8);
     DECLARE password_hash_with_salted BINARY(64);
@@ -63,8 +67,8 @@ BEGIN
     SET password_hash_with_salted = SHA2(CONCAT(salt_new_one, password), 256);
 
     -- Insert the new user record into the user_info table.
-    INSERT INTO user_info (username, salt, password_hash)
-    VALUES (new_username, salt_new_one, password_hash_with_salted);
+    INSERT INTO user_info (username, salt, password_hash, is_admin)
+    VALUES (new_username, salt_new_one, password_hash_with_salted, is_admin);
 END !
 DELIMITER ;
 
@@ -104,8 +108,8 @@ DELIMITER ;
 -- [Problem 1c]
 -- Add at least two users into your user_info table so that when we run this file,
 -- we will have examples users in the database.
-CALL sp_add_user('user1', 'password123');
-CALL sp_add_user('user2', 'password456');
+CALL sp_add_user('azhao', 'adminpw', 1);
+CALL sp_add_user('client', 'clientpw', 0);
 
 -- [Problem 1d]
 -- Create a procedure sp_change_password to generate a new salt and change the given

@@ -68,6 +68,8 @@ def show_options():
     print('  (d) - Check supplier directory')
     print('  (e) - Place supply order')
     print('  (f) - Update inventory')
+    print('  (g) - Add new user')
+    print('  (h) - Change user password')
     print('  (q) - quit')
     print()
     ans = input('Enter an option: ').lower()
@@ -85,6 +87,15 @@ def show_options():
         place_supply_order()
     elif ans == 'f':
         update_inventory()
+    elif ans == 'g':
+        new_username = input("Enter new username: ")
+        password = input("Enter new user password: ")
+        is_admin = input("Is admin (0 for no, 1 for yes): ")
+        add_new_user(new_username, password, int(is_admin))
+    elif ans == 'h':
+        username = input("Enter username: ")
+        new_password = input("Enter new password: ")
+        change_user_password(username, new_password)
     else:
         print('That\'s not one of the options. Please try again.\n')
         show_options()
@@ -329,12 +340,107 @@ def update_inventory():
         else:
             sys.stderr('your database broke.')
 
+def add_new_user(new_username, password, is_admin):
+    try:
+        with conn.cursor() as cursor:
+            # First, check if the username already exists
+            cursor.execute("SELECT COUNT(*) FROM user_info WHERE username = %s", (new_username,))
+            if cursor.fetchone()[0] > 0:
+                print("Username already exists. Please choose a different username.")
+                return
+
+            # If the username doesn't exist, proceed to create the new user
+            sql = "CALL sp_add_user(%s, %s, %s)"
+            cursor.execute(sql, (new_username, password, is_admin))
+            conn.commit()
+            print(f'New User created: {new_username}')
+
+        ret = input('Do something else? (y/n) ').lower()
+        if ret == 'y':
+            show_options()
+        else:
+            quit_ui()
+    except mysql.connector.Error as err:
+        # Handle database errors more gracefully
+        if DEBUG:
+            print("Error:", err, file=sys.stderr)
+        else:
+            print('An error occurred with the database operation.', file=sys.stderr)
+
+def change_user_password(username, new_password):
+    try:
+        with conn.cursor() as cursor:
+            # First, check if the user exists
+            cursor.execute("SELECT COUNT(*) FROM user_info WHERE username = %s", (username,))
+            if cursor.fetchone()[0] == 0:
+                print("Username does not exist. Please enter a valid username.")
+                return
+
+            # If the user exists, proceed to change the password
+            sql = "CALL sp_change_password(%s, %s)"
+            cursor.execute(sql, (username, new_password))
+            conn.commit()
+            print(f"Password for {username} has been updated successfully.")
+
+        ret = input('Do something else? (y/n) ').lower()
+        if ret == 'y':
+            show_options()
+        else:
+            quit_ui()
+    except mysql.connector.Error as err:
+        # Handle database errors more gracefully
+        if DEBUG:
+            print("Error:", err, file=sys.stderr)
+        else:
+            print('An error occurred with the database operation.', file=sys.stderr)
+
+def login_and_authenticate():
+    """
+    Prompts the user for a username and password, and authenticates the credentials.
+    If authentication fails due to incorrect credentials or lack of admin rights,
+    appropriate messages are displayed.
+    """
+    username = input('Username: ')
+    password = input('Password: ')
+
+    cursor = conn.cursor()
+
+    # Use parameterized queries to enhance security.
+    sql = 'SELECT authenticate(%s, %s) AS login, is_admin FROM user_info WHERE username=%s;'
+    params = (username, password, username)
+
+    try:
+        cursor.execute(sql, params)
+        row = cursor.fetchone()
+
+        if row is None:
+            print("Login failed: Username or password incorrect.")
+            return False
+
+        login, is_admin = row
+
+        if not login:
+            print("Login failed: Username or password incorrect.")
+            return False
+
+        if not is_admin:
+            print("Access denied: Insufficient privileges.")
+            return False
+
+        print(f"Login successful: Welcome, {username}!")
+        return True
+
+    except Error as err:
+        print(f"System error: {err}. Please contact the system administrator.")
+        return False
 
 def main():
     """
     Main function for starting things up.
     """
-    show_options()
+    if (login_and_authenticate()):
+        while(True):
+            show_options()
 
 
 if __name__ == '__main__':
